@@ -83,6 +83,12 @@ The frontend is a stateful chat application. Users create **threads** (conversat
    mutation, disables switches until that mutation's success refetch completes,
    displays the backend error `detail` through a toast, and invalidates
    `["mcpConfig"]` only after success.
+   Current-chat MCP background tasks use `core/background-tasks`: the header
+   trigger is hidden for new/mock/static-demo threads, lists at most 20 local
+   task records, refreshes every 3 seconds while any task is active (15 seconds
+   otherwise), and cancels through the thread-scoped local-ID endpoint. The UI
+   must never request or render a remote MCP task handle; a persisted cancel
+   request remains "Cancelling…" only while the task status is still active.
 6. Components subscribe to thread state and render updates
 
 The chat header's context-window control is intentionally persistent: while `context_usage` is unavailable, `ContextUsageBadge` renders a gauge placeholder rather than unmounting; once data arrives, the same position shows the percentage. `useThreadTokenUsage` retains placeholder data only when the response `thread_id` still matches the active route, so same-thread refetches do not flicker and cross-thread navigation never displays the previous chat's usage.
